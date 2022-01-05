@@ -93,7 +93,6 @@ class KITTIDataset(BaseDataset):
     odometry_benchmark["2011_10_03_drive_0027_extract"] = [0, 45692]
     odometry_benchmark["2011_10_03_drive_0042_extract"] = [0, 12180]
     odometry_benchmark["2011_10_03_drive_0034_extract"] = [0, 47935]
-    odometry_benchmark["2011_09_26_drive_0067_extract"] = [0, 8000]
     odometry_benchmark["2011_09_30_drive_0016_extract"] = [0, 2950]
     odometry_benchmark["2011_09_30_drive_0018_extract"] = [0, 28659]
     odometry_benchmark["2011_09_30_drive_0020_extract"] = [0, 11347]
@@ -106,7 +105,6 @@ class KITTIDataset(BaseDataset):
     odometry_benchmark_img["2011_10_03_drive_0027_extract"] = [0, 45400]
     odometry_benchmark_img["2011_10_03_drive_0042_extract"] = [0, 11000]
     odometry_benchmark_img["2011_10_03_drive_0034_extract"] = [0, 46600]
-    odometry_benchmark_img["2011_09_26_drive_0067_extract"] = [0, 8000]
     odometry_benchmark_img["2011_09_30_drive_0016_extract"] = [0, 2700]
     odometry_benchmark_img["2011_09_30_drive_0018_extract"] = [0, 27600]
     odometry_benchmark_img["2011_09_30_drive_0020_extract"] = [0, 11000]
@@ -119,14 +117,23 @@ class KITTIDataset(BaseDataset):
         super(KITTIDataset, self).__init__(args)
 
         self.datasets_validatation_filter['2011_09_30_drive_0028_extract'] = [11231, 53650]
-        self.datasets_train_filter["2011_10_03_drive_0042_extract"] = [0, None]
+        self.datasets_train_filter["2011_10_03_drive_0042_extract"] = [0, 12180]
         self.datasets_train_filter["2011_09_30_drive_0018_extract"] = [0, 15000]
-        self.datasets_train_filter["2011_09_30_drive_0020_extract"] = [0, None]
-        self.datasets_train_filter["2011_09_30_drive_0027_extract"] = [0, None]
-        self.datasets_train_filter["2011_09_30_drive_0033_extract"] = [0, None]
+        self.datasets_train_filter["2011_09_30_drive_0020_extract"] = [0, 11347]
+        self.datasets_train_filter["2011_09_30_drive_0027_extract"] = [0, 11545]
+        self.datasets_train_filter["2011_09_30_drive_0033_extract"] = [0, 16589]
         self.datasets_train_filter["2011_10_03_drive_0027_extract"] = [0, 18000]
         self.datasets_train_filter["2011_10_03_drive_0034_extract"] = [0, 31000]
-        self.datasets_train_filter["2011_09_30_drive_0034_extract"] = [0, None]
+        self.datasets_train_filter["2011_09_30_drive_0034_extract"] = [0, 12744]
+
+        # self.datasets_train_filter["2011_10_03_drive_0042_extract"] = [0, None]
+        # self.datasets_train_filter["2011_09_30_drive_0018_extract"] = [0, 15000]
+        # self.datasets_train_filter["2011_09_30_drive_0020_extract"] = [0, None]
+        # self.datasets_train_filter["2011_09_30_drive_0027_extract"] = [0, None]
+        # self.datasets_train_filter["2011_09_30_drive_0033_extract"] = [0, None]
+        # self.datasets_train_filter["2011_10_03_drive_0027_extract"] = [0, 18000]
+        # self.datasets_train_filter["2011_10_03_drive_0034_extract"] = [0, 31000]
+        # self.datasets_train_filter["2011_09_30_drive_0034_extract"] = [0, None]
 
         for dataset_fake in KITTIDataset.datasets_fake:
             if dataset_fake in self.datasets:
@@ -414,7 +421,7 @@ class KITTIDataset(BaseDataset):
                 timestamps.append(t)
         return timestamps
 
-
+### for testing model
 def test_filter(args, dataset):
     iekf = IEKF()
     torch_iekf = TORCHIEKF()
@@ -455,18 +462,20 @@ def test_filter(args, dataset):
 
 
 class KITTIArgs():
-        path_data_base = "/media/mines/46230797-4d43-4860-9b76-ce35e699ea47/KITTI/raw"
+        path_data_base = "../../../Datasets/kitti_dataset/"
         path_data_save = "../data"
         path_results = "../results"
         path_temp = "../temp"
 
         epochs = 400
+        ### time tick for each subsequence
         seq_dim = 6000
 
         # training, cross-validation and test dataset
         cross_validation_sequences = ['2011_09_30_drive_0028_extract']
         test_sequences = ['2011_09_30_drive_0028_extract']
-        continue_training = True
+        # continue_training = True
+        continue_training = False
 
         # choose what to do
         read_data = 0
@@ -475,9 +484,13 @@ class KITTIArgs():
         results_filter = 1
         dataset_class = KITTIDataset
         parameter_class = KITTIParameters
+        device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 if __name__ == '__main__':
+    if torch.cuda.is_available():
+        print("CUDA is available")
+
     args = KITTIArgs()
     dataset = KITTIDataset(args)
     launch(KITTIArgs)
